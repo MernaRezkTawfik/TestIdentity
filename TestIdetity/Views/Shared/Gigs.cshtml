@@ -1,0 +1,87 @@
+﻿@model TestIdetity.ViewModels.HomeViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+<h1>@Model.Heading</h1>
+<ul class="gigs voffset3">
+    @foreach (var gig in Model.UpComingGigs)
+    {
+                <li>
+    <div class="date">
+        <div class="month"></div>
+        @gig.DateTime.ToString("MMM");
+        <div class="day"></div>
+        @gig.DateTime.ToString("d ")
+    </div>
+
+    <div class="details">
+        <span class="artist"></span>
+        @gig.Artist.Name
+        @if(Model.Actions)
+        {
+        <button class="btn btn-link btn-sm js-toggle-follow" data-user-id="@gig.ArtistId">Follow</button>
+        }
+        <span class="genre"></span>
+        @gig.genre.Name
+        @if(Model.Actions)
+        {
+        <button  data-gig-id="@gig.Id" class="btn btn-sm pull-right js-toggle-attendance">Gonig?</button>
+        }
+    </div>
+          </li>                      
+    }
+</ul>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $(".js-toggle-attendance").click(function (e) {
+
+                var button = $(e.target);
+                $.post("/api/attendances", { gigid: button.attr("data-gig-id") })//gig id as a key
+                    .done(function () {
+                        button
+                            .removeClass("btn-default")
+                            .addClass("btn-info")
+                            .text("Going")
+
+                    })
+
+                    .fail(function () {
+                        alert("Something failed!")
+
+
+                    });
+
+
+
+            });
+
+
+
+            $(".js-toggle-follow").click(function (e) {
+
+                var button = $(e.target);
+                $.post("/api/followings", { FolloweeId: button.attr("data-user-id") })
+                    .done(function () {
+
+                        button.text("following");
+                    } )
+                    .fail(function () {
+                        alret("something failed")
+
+                    
+
+                    } );
+
+
+            });
+
+        });
+
+
+
+    </script>
+   
+}
